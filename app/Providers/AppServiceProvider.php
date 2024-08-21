@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Http\Request;
 use App\Breadcrumbs\Breadcrumbs;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 
@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
-        Request::macro('breadcrumbs', function (){
+        Request::macro('breadcrumbs', function () {
             return new Breadcrumbs($this);
         });
     }
