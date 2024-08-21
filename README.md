@@ -2,12 +2,9 @@
 
 Inventory Management System with Laravel 10 and MySql.
 
-![Dashboard](https://user-images.githubusercontent.com/71541409/236858603-89e4be74-0a8b-4b4b-98b0-24e66ec5602d.png)
+![img.png](img.png)
 
-## 💀 Design Database
-![Diagram Class](https://github.com/fajarghifar/inventory-management-system/assets/71541409/0c7d4163-96f5-4724-8741-4615e52ecf98)
-
-## 😎 Features
+## 🚀 Features
 - POS
 - Orders
   - Pending Orders
@@ -21,7 +18,7 @@ Inventory Management System with Laravel 10 and MySql.
 - Customers
 - Suppliers
 
-## 🚀 How to Use
+## :hammer: Setup & How to Use
 
 1. Clone Repository `git clone https://github.com/fajarghifar/inventory-management-system` 
 2. Go into the repository `cd inventory-management-system`
@@ -29,13 +26,14 @@ Inventory Management System with Laravel 10 and MySql.
 4. Copy `.env` file `cp .env.example .env`
 5. Generate app key `php artisan key:generate`
 6. Setting up your database credentials in your `.env` file.
-7. Seed Database: `php artisan migrate:fresh ---seed`
-8. Create Storage Link `php artisan storage:link`
-9. Install NPM dependencies `npm install && npm run dev`
-10. Run `php artisan serve`
-11. Try login with email: `admin@admin.com` and password: `password`
+7. Migrate database `php artisan migrate`
+8. Seed Database: `php artisan migrate:fresh ---seed`
+9. Create Storage Link `php artisan storage:link`
+10. Install NPM dependencies `npm install && npm run dev`
+11. Run `php artisan serve`
+12. Try login with email: `admin@admin.com` and password: `password`
 
-## 🚀 Config
+## :gear: Config
 
 1. **Config Chart**
 
@@ -49,6 +47,3 @@ If you have any ideas to make it more interesting, please send a PR or create an
 # 🤝 License
 
 ### [MIT](LICENSE)
-
-> Github [@fajarghifar](https://github.com/fajarghifar) &nbsp;&middot;&nbsp;
-> Instagram [@fajarghifar](https://instagram.com/fajarghifar)
