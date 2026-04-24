@@ -1,8 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Facade;
-use Illuminate\Support\ServiceProvider;
-
 return [
 
     /*
@@ -10,9 +7,9 @@ return [
     | Application Name
     |--------------------------------------------------------------------------
     |
-    | This value is the name of your application. This value is used when the
+    | This value is the name of your application, which will be used when the
     | framework needs to place the application's name in a notification or
-    | any other location as required by the application or its packages.
+    | other UI elements where an application name needs to be displayed.
     |
     */
 
@@ -51,13 +48,11 @@ return [
     |
     | This URL is used by the console to properly generate URLs when using
     | the Artisan command line tool. You should set this to the root of
-    | your application so that it is used when running Artisan tasks.
+    | the application so that it's available within Artisan commands.
     |
     */
 
     'url' => env('APP_URL', 'http://localhost'),
-
-    'asset_url' => env('ASSET_URL'), // TODO: need that?
 
     /*
     |--------------------------------------------------------------------------
@@ -70,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -106,7 +101,7 @@ return [
 
     'previous_keys' => [
         ...array_filter(
-            explode(',', env('APP_PREVIOUS_KEYS', ''))
+            explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
         ),
     ],
 
@@ -127,51 +122,5 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
-
-//    /*
-//    |--------------------------------------------------------------------------
-//    | Autoloaded Service Providers
-//    |--------------------------------------------------------------------------
-//    |
-//    | The service providers listed here will be automatically loaded on the
-//    | request to your application. Feel free to add your own services to
-//    | this array to grant expanded functionality to your applications.
-//    |
-//    */
-//
-//    'providers' => ServiceProvider::defaultProviders()->merge([
-//        /*
-//         * Package Service Providers...
-//         */
-//
-//        /*
-//         * Application Service Providers...
-//         */
-//        App\Providers\AppServiceProvider::class,
-//        App\Providers\AuthServiceProvider::class,
-//        // App\Providers\BroadcastServiceProvider::class,
-//        App\Providers\EventServiceProvider::class,
-//        App\Providers\RouteServiceProvider::class,
-//
-//        /*
-//        * Third Party Service Providers...
-//        */
-//        Kyslik\ColumnSortable\ColumnSortableServiceProvider::class,Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class
-//    ])->toArray(),
-//
-//    /*
-//    |--------------------------------------------------------------------------
-//    | Class Aliases
-//    |--------------------------------------------------------------------------
-//    |
-//    | This array of class aliases will be registered when this application
-//    | is started. However, feel free to register as many as you wish as
-//    | the aliases are "lazy" loaded so they don't hinder performance.
-//    |
-//    */
-//
-//    'aliases' => Facade::defaultAliases()->merge([
-//        // 'Example' => App\Facades\Example::class,
-//    ])->toArray(),
 
 ];

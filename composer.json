@@ -1,37 +1,39 @@
 {
+    "$schema": "https://getcomposer.org/schema.json",
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
-        "anayarojo/shoppingcart": "^4.2",
+        "php": "^8.3",
+        "laravel/framework": "^13.0",
+        "laravel/tinker": "^3.0",
+
+        "livewire/livewire": "^3.0",
+        "mimisk13/laravel-tabler": "^0.1.1",
+        "laravolt/avatar": "^6.0",
         "awobaz/compoships": "^2.2",
         "guzzlehttp/guzzle": "^7.9",
         "haruncpi/laravel-id-generator": "^1.1",
-        "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
-        "laravel/tinker": "^2.9",
-        "laravolt/avatar": "^5.0",
-        "livewire/livewire": "^3.4",
-        "mimisk13/laravel-tabler": "^0.0.5",
         "phpoffice/phpspreadsheet": "^1.28",
         "picqer/php-barcode-generator": "^2.2",
-        "power-components/livewire-powergrid": "^5.1",
-        "rappasoft/laravel-livewire-tables": "^3.1"
+        "anayarojo/shoppingcart": "dev-l13-compatibility"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.9",
         "fakerphp/faker": "^1.23",
-        "kyslik/column-sortable": "^6.5",
-        "laravel/boost": "^1.8",
+
+        "laravel/boost": "^2.0",
         "laravel/breeze": "^2.0",
-        "laravel/pint": "^1.13",
+        "laravel/pint": "^1.27",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.0",
-        "phpunit/phpunit": "^11.0.1"
+        "nunomaduro/collision": "^8.6",
+        "phpunit/phpunit": "^12.5.12",
+
+        "kyslik/column-sortable": "^8.0",
+        "barryvdh/laravel-debugbar": "^4.0"
     },
     "autoload": {
         "psr-4": {
@@ -49,12 +51,29 @@
         }
     },
     "scripts": {
+        "setup": [
+            "composer install",
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php artisan key:generate",
+            "@php artisan migrate --force",
+            "npm install --ignore-scripts",
+            "npm run build"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
+        ],
+        "test": [
+            "@php artisan config:clear --ansi @no_additional_args",
+            "@php artisan test"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan boost:update --ansi"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
@@ -64,8 +83,8 @@
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
-        "test": [
-            "vendor\\bin\\phpunit --coverage-html reports/"
+        "pre-package-uninstall": [
+            "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ]
     },
     "extra": {
@@ -82,6 +101,12 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
-    "prefer-stable": true
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/laravel-shift/laravel-shopping-cart.git"
+        }
+    ]
 }
