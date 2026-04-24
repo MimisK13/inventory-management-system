@@ -105,8 +105,6 @@ class UnitTest extends TestCase
 
     public function test_update_unit_request_validation()
     {
-        // $this->withoutExceptionHandling();
-
         $user = $this->createUser();
         $unit = $this->createUnit();
 
@@ -122,8 +120,6 @@ class UnitTest extends TestCase
 
     public function test_update_unit()
     {
-        // $this->withoutExceptionHandling();
-
         $user = $this->createUser();
         $unit = $this->createUnit();
 

@@ -5,10 +5,10 @@ namespace App\Livewire\PowerGrid;
 use App\Models\Supplier;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Livewire\Attributes\On;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Exportable;
-use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\Footer;
 use PowerComponents\LivewirePowerGrid\Header;
 use PowerComponents\LivewirePowerGrid\PowerGrid;
@@ -18,6 +18,7 @@ use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 final class SuppliersTable extends PowerGridComponent
 {
     public int $perPage = 5;
+
     public array $perPageValues = [0, 5, 10, 20, 50];
 
     public function setUp(): array
@@ -77,7 +78,7 @@ final class SuppliersTable extends PowerGridComponent
 
             Column::action('Action')
                 ->headerAttribute('text-center', styleAttr: 'width: 150px;')
-                ->bodyAttribute('text-center d-flex justify-content-around')
+                ->bodyAttribute('text-center d-flex justify-content-around'),
         ];
     }
 
@@ -88,13 +89,13 @@ final class SuppliersTable extends PowerGridComponent
         ];
     }
 
-    #[\Livewire\Attributes\On('edit')]
+    #[On('edit')]
     public function edit($rowId): void
     {
         $this->js('alert('.$rowId.')');
     }
 
-    public function actions(\App\Models\Supplier $row): array
+    public function actions(Supplier $row): array
     {
         return [
             Button::make('show', file_get_contents('assets/svg/eye.svg'))
@@ -117,16 +118,4 @@ final class SuppliersTable extends PowerGridComponent
                 ->method('delete'),
         ];
     }
-
-    /*
-    public function actionRules(\App\Models\Supplier $row): array
-    {
-       return [
-            // Hide button edit for ID 1
-            Rule::button('edit')
-                ->when(fn($row) => $row->id === 1)
-                ->hide(),
-        ];
-    }
-    */
 }

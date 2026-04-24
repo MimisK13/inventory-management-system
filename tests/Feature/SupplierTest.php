@@ -69,8 +69,6 @@ class SupplierTest extends TestCase
 
     public function test_user_can_delete_category()
     {
-        //$this->withoutExceptionHandling();
-
         $category = $this->createSupplier();
 
         $this->assertDatabaseHas('suppliers', ['name' => 'Thomann']);
@@ -79,7 +77,7 @@ class SupplierTest extends TestCase
         $user = $this->createUser();
         $this->actingAs($user);
 
-        $this->delete('/suppliers/'. $category->id);
+        $this->delete('/suppliers/'.$category->id);
 
         $this->assertDatabaseCount('suppliers', 0);
     }

@@ -3,14 +3,14 @@
 namespace App\Livewire\PowerGrid;
 
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
+use PowerComponents\LivewirePowerGrid\Exportable;
 use PowerComponents\LivewirePowerGrid\Footer;
 use PowerComponents\LivewirePowerGrid\Header;
 use PowerComponents\LivewirePowerGrid\PowerGrid;
-use PowerComponents\LivewirePowerGrid\Exportable;
 use PowerComponents\LivewirePowerGrid\PowerGridColumns;
 use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 use PowerComponents\LivewirePowerGrid\Traits\WithExport;
@@ -20,12 +20,11 @@ final class UserTable extends PowerGridComponent
     use WithExport;
 
     public int $perPage = 5;
+
     public array $perPageValues = [0, 5, 10, 20, 50];
 
     public function setUp(): array
     {
-        //$this->showCheckBox();
-
         return [
             Exportable::make('export')
                 ->striped()
@@ -33,7 +32,6 @@ final class UserTable extends PowerGridComponent
 
             Header::make()
                 ->showSearchInput(),
-                //->showToggleColumns(),
 
             Footer::make()
                 ->showPerPage($this->perPage, $this->perPageValues)
@@ -90,26 +88,19 @@ final class UserTable extends PowerGridComponent
 
             Column::action('Action')
                 ->headerAttribute('text-center', styleAttr: 'width: 150px;')
-                ->bodyAttribute('text-center d-flex justify-content-around')
+                ->bodyAttribute('text-center d-flex justify-content-around'),
         ];
     }
 
     public function filters(): array
     {
-        return [
-//            Filter::inputText('photo')->operators(['contains']),
-//            Filter::inputText('name')->operators(['contains']),
-//            Filter::inputText('username')->operators(['contains']),
-//            Filter::inputText('email')->operators(['contains']),
-//            Filter::datetimepicker('created_at'),
-        ];
+        return [];
     }
 
     public function actions(User $row): array
     {
         return [
             Button::make('show', file_get_contents('assets/svg/eye.svg'))
-//                ->slot('Show')
                 ->class('btn btn-outline-info btn-icon w-100')
                 ->tooltip('Show User Details')
                 ->route('users.show', ['user' => $row])

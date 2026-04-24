@@ -82,7 +82,6 @@ class PurchaseController extends Controller
                 $pDetails['total'] = $product['total'];
                 $pDetails['created_at'] = Carbon::now();
 
-                //PurchaseDetails::insert($pDetails);
                 $purchase->details()->insert($pDetails);
             }
         }
@@ -103,7 +102,6 @@ class PurchaseController extends Controller
 
         Purchase::findOrFail($purchase->id)
             ->update([
-                //'purchase_status' => 1, // 1 = approved, 0 = pending
                 'status' => PurchaseStatus::APPROVED,
                 'updated_by' => auth()->user()->id,
             ]);
@@ -125,7 +123,6 @@ class PurchaseController extends Controller
     public function dailyPurchaseReport()
     {
         $purchases = Purchase::with(['supplier'])
-            //->where('purchase_status', 1)
             ->where('date', today()->format('Y-m-d'))->get();
 
         return view('purchases.details-purchase', [
@@ -191,7 +188,7 @@ class PurchaseController extends Controller
         ini_set('memory_limit', '4000M');
 
         try {
-            $spreadSheet = new Spreadsheet();
+            $spreadSheet = new Spreadsheet;
             $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
             $spreadSheet->getActiveSheet()->fromArray($products);
             $Excel_writer = new Xls($spreadSheet);

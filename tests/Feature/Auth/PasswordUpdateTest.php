@@ -33,16 +33,7 @@ class PasswordUpdateTest extends TestCase
 
     public function test_correct_password_must_be_provided_to_update_password(): void
     {
-       //$this->withoutExceptionHandling();
-
         $user = User::factory()->create();
-
-//        $user = User::create([
-//            'name' => 'test',
-//            'email' => 'test@test.com',
-//            'password' => bcrypt('password'),
-//            'username' => 'test'
-//        ]);
 
         $response = $this
             ->actingAs($user)
@@ -54,7 +45,6 @@ class PasswordUpdateTest extends TestCase
             ]);
 
         $response
-            //->assertSessionHasErrorsIn('updatePassword', 'current_password')
             ->assertRedirect('/profile');
     }
 }

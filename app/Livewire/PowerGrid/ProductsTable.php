@@ -4,11 +4,9 @@ namespace App\Livewire\PowerGrid;
 
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 use PowerComponents\LivewirePowerGrid\Button;
 use PowerComponents\LivewirePowerGrid\Column;
 use PowerComponents\LivewirePowerGrid\Exportable;
-use PowerComponents\LivewirePowerGrid\Facades\Filter;
 use PowerComponents\LivewirePowerGrid\Footer;
 use PowerComponents\LivewirePowerGrid\Header;
 use PowerComponents\LivewirePowerGrid\PowerGrid;
@@ -19,8 +17,6 @@ final class ProductsTable extends PowerGridComponent
 {
     public function setUp(): array
     {
-        //$this->showCheckBox();
-
         return [
             Exportable::make('export')
                 ->striped()
@@ -46,15 +42,15 @@ final class ProductsTable extends PowerGridComponent
             ->addColumn('id')
             ->addColumn('image')
             ->addColumn('name')
-            ->addColumn('category_id', function (Product $product){
+            ->addColumn('category_id', function (Product $product) {
                 return $product->category_id;
             })
-            ->addColumn('category_name', function (Product $product){
+            ->addColumn('category_name', function (Product $product) {
                 return $product->category->name;
             })
             ->addColumn('quantity')
             ->addColumn('unit_id')
-            ->addColumn('unit_name', function (Product $product){
+            ->addColumn('unit_name', function (Product $product) {
                 return $product->unit->short_code;
             })
 
@@ -103,7 +99,7 @@ final class ProductsTable extends PowerGridComponent
 
             Column::action('Action')
                 ->headerAttribute('align-middle text-center', styleAttr: 'width: 150px;')
-                ->bodyAttribute('align-middle text-center d-flex justify-content-around')
+                ->bodyAttribute('align-middle text-center d-flex justify-content-around'),
         ];
     }
 
@@ -114,7 +110,7 @@ final class ProductsTable extends PowerGridComponent
         ];
     }
 
-    public function actions(\App\Models\Product $row): array
+    public function actions(Product $row): array
     {
         return [
             Button::make('show', file_get_contents('assets/svg/eye.svg'))

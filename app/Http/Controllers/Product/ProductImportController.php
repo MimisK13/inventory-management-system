@@ -23,25 +23,25 @@ class ProductImportController extends Controller
 
         $the_file = $request->file('file');
 
-        try{
+        try {
             $spreadsheet = IOFactory::load($the_file->getRealPath());
-            $sheet        = $spreadsheet->getActiveSheet();
-            $row_limit    = $sheet->getHighestDataRow();
+            $sheet = $spreadsheet->getActiveSheet();
+            $row_limit = $sheet->getHighestDataRow();
             $column_limit = $sheet->getHighestDataColumn();
-            $row_range    = range( 2, $row_limit );
-            $column_range = range( 'J', $column_limit );
+            $row_range = range(2, $row_limit);
+            $column_range = range('J', $column_limit);
             $startcount = 2;
-            $data = array();
-            foreach ( $row_range as $row ) {
+            $data = [];
+            foreach ($row_range as $row) {
                 $data[] = [
-                    'name'          => $sheet->getCell( 'A' . $row )->getValue(),
-                    'category_id'   => $sheet->getCell( 'B' . $row )->getValue(),
-                    'unit_id'       => $sheet->getCell( 'C' . $row )->getValue(),
-                    'code'          => $sheet->getCell( 'D' . $row )->getValue(),
-                    'quantity'      => $sheet->getCell( 'E' . $row )->getValue(),
-                    'buying_price'  => $sheet->getCell( 'F' . $row )->getValue(),
-                    'selling_price' => $sheet->getCell( 'G' . $row )->getValue(),
-                    'product_image' => $sheet->getCell( 'H' . $row )->getValue(),
+                    'name' => $sheet->getCell('A'.$row)->getValue(),
+                    'category_id' => $sheet->getCell('B'.$row)->getValue(),
+                    'unit_id' => $sheet->getCell('C'.$row)->getValue(),
+                    'code' => $sheet->getCell('D'.$row)->getValue(),
+                    'quantity' => $sheet->getCell('E'.$row)->getValue(),
+                    'buying_price' => $sheet->getCell('F'.$row)->getValue(),
+                    'selling_price' => $sheet->getCell('G'.$row)->getValue(),
+                    'product_image' => $sheet->getCell('H'.$row)->getValue(),
                 ];
                 $startcount++;
             }
@@ -49,7 +49,6 @@ class ProductImportController extends Controller
             Product::insert($data);
 
         } catch (Exception $e) {
-            // $error_code = $e->errorInfo[1];
             return redirect()
                 ->route('products.index')
                 ->with('error', 'There was a problem uploading the data!');

@@ -16,6 +16,7 @@ use PowerComponents\LivewirePowerGrid\PowerGridComponent;
 final class CategoriesTable extends PowerGridComponent
 {
     public int $perPage = 5;
+
     public array $perPageValues = [0, 5, 10, 20, 50];
 
     public function setUp(): array
@@ -77,23 +78,19 @@ final class CategoriesTable extends PowerGridComponent
 
             Column::action('Action')
                 ->headerAttribute('text-center', styleAttr: 'width: 150px;')
-                ->bodyAttribute('text-center d-flex justify-content-around')
+                ->bodyAttribute('text-center d-flex justify-content-around'),
         ];
     }
 
     public function filters(): array
     {
-        return [
-//            Filter::inputText('name'),
-//            Filter::datepicker('created_at_formatted', 'created_at'),
-        ];
+        return [];
     }
 
-    public function actions(\App\Models\Category $row): array
+    public function actions(Category $row): array
     {
         return [
             Button::make('show', file_get_contents('assets/svg/eye.svg'))
-//                ->slot('Show')
                 ->class('btn btn-outline-info btn-icon w-100')
                 ->tooltip('Show Category Details')
                 ->route('categories.show', ['category' => $row])

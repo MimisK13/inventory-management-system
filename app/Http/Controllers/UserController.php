@@ -63,11 +63,6 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
-
-        //        if ($validatedData['email'] != $user->email) {
-        //            $validatedData['email_verified_at'] = null;
-        //        }
-
         $user->update($request->except('photo'));
 
         /**

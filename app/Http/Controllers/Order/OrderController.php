@@ -82,7 +82,6 @@ class OrderController extends Controller
 
         foreach ($products as $product) {
             Product::where('id', $product->product_id)
-                    //->update(['stock' => DB::raw('stock-'.$product->quantity)]);
                 ->update(['quantity' => DB::raw('quantity-'.$product->quantity)]);
         }
 
@@ -103,9 +102,6 @@ class OrderController extends Controller
     public function downloadInvoice($order)
     {
         // TODO: Need refactor
-        //dd($order);
-
-        //$order = Order::with('customer')->where('id', $order_id)->first();
         $order = Order::with(['customer', 'details'])
             ->where('id', $order)
             ->first();

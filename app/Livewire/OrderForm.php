@@ -28,8 +28,6 @@ class OrderForm extends Component
         $this->cart_instance = $cartInstance;
 
         $this->allProducts = Product::all();
-
-        //$cart_items = Cart::instance($this->cart_instance)->content();
     }
 
     public function render(): View
@@ -104,9 +102,6 @@ class OrderForm extends Component
         if ($exists->isNotEmpty()) {
             session()->flash('message', 'Product exists in the cart!');
 
-            // not working correctly
-            //unset($this->invoiceProducts[$index]);
-
             return;
         }
 
@@ -114,7 +109,7 @@ class OrderForm extends Component
             'id' => $product['id'],
             'name' => $product['name'],
             'price' => $product['buying_price'],
-            'qty' => $this->invoiceProducts[$index]['quantity'], //form field
+            'qty' => $this->invoiceProducts[$index]['quantity'], // form field
             'weight' => 1,
             'options' => [
                 'code' => $product['code'],
@@ -127,8 +122,5 @@ class OrderForm extends Component
         unset($this->invoiceProducts[$index]);
 
         $this->invoiceProducts = array_values($this->invoiceProducts);
-
-        //
-        //Cart::instance($this->cart_instance)->remove($index);
     }
 }

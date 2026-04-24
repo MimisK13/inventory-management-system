@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Category;
+use App\Models\Unit;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +19,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug');
             $table->string('code')->unique()->nullable();
-            //$table->string('product_barcode_symbology')->nullable();
             $table->integer('quantity');
             $table->integer('buying_price')->comment('Buying Price');
             $table->integer('selling_price')->comment('Selling Price');
@@ -28,14 +29,12 @@ return new class extends Migration
 
             $table->string('product_image')->nullable();
 
-            $table->foreignIdFor(\App\Models\Category::class)
+            $table->foreignIdFor(Category::class)
                 ->nullable()
                 ->constrained()
-//                ->restrictOnDelete();
-//                ->cascadeOnDelete();
                 ->nullOnDelete();
 
-            $table->foreignIdFor(\App\Models\Unit::class)->constrained()
+            $table->foreignIdFor(Unit::class)->constrained()
                 ->cascadeOnDelete();
             $table->timestamps();
         });
