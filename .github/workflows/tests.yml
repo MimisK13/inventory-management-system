@@ -6,17 +6,20 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   laravel-tests:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+    - uses: shivammathur/setup-php@v2
       with:
         php-version: '8.4'
         coverage: xdebug
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Install Dependencies
@@ -35,7 +38,7 @@ jobs:
         DB_DATABASE: database/database.sqlite
       run: php artisan test --compact --coverage-clover=coverage.xml
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v6
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage.xml
