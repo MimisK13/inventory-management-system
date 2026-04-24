@@ -43,13 +43,13 @@
                                 {{ $purchase->supplier->name }}
                             </td>
                             <td class="text-center">
-                                {{ $purchase->purchase_date->format('d-m-Y') }}
+                                {{ $purchase->date->format('d-m-Y') }}
                             </td>
                             <td class="text-center">
                                 {{ Number::currency($purchase->total_amount, 'EUR') }}
                             </td>
                             <td class="text-center">
-                                <span class="btn btn-{{ $purchase->purchase_status == 0 ? 'warning' : 'success' }} btn-sm text-uppercase">{{ $purchase->purchase_status == 0 ? 'pending' : 'approved' }}</span>
+                                <span class="btn btn-{{ $purchase->status->value === 0 ? 'warning' : 'success' }} btn-sm text-uppercase">{{ $purchase->status->label() }}</span>
                             </td>
                             <td class="text-center">
                                 <a href="{{ route('purchases.show', $purchase) }}" class="btn btn-icon btn-outline-info">

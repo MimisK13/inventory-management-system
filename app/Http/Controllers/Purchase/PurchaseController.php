@@ -123,9 +123,11 @@ class PurchaseController extends Controller
     public function dailyPurchaseReport()
     {
         $purchases = Purchase::with(['supplier'])
-            ->where('date', today()->format('Y-m-d'))->get();
+            ->whereDate('date', today())
+            ->latest()
+            ->get();
 
-        return view('purchases.details-purchase', [
+        return view('purchases.daily-report', [
             'purchases' => $purchases,
         ]);
     }
