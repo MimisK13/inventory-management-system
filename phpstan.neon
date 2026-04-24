@@ -1,0 +1,15 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app/Enums
+        - app/Helpers
+        - app/Models
+
+    level: 1
+
+    tmpDir: storage/phpstan
+
+    scanFiles:
+        - app/Helpers/helpers.php

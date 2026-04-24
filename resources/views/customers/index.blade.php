@@ -11,15 +11,6 @@
         />
     @else
         <div class="container-xl">
-
-            {{---
-            <div class="card">
-                <div class="card-body">
-                    <livewire:power-grid.customers-table/>
-                </div>
-            </div>
-            ---}}
-
             @livewire('tables.customer-table')
         </div>
     @endif

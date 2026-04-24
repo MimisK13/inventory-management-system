@@ -167,10 +167,10 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th scope="col">No.</th>
-                                        <th scope="col">@sortablelink('product_name', 'Name')</th>
-                                        <th scope="col">@sortablelink('stock')</th>
-                                        <th scope="col">@sortablelink('unit.name', 'unit')</th>
-                                        <th scope="col">@sortablelink('selling_price', 'Price')</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Stock</th>
+                                        <th scope="col">Unit</th>
+                                        <th scope="col">Price</th>
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>

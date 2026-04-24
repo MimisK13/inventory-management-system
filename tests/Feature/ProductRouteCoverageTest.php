@@ -29,7 +29,10 @@ class ProductRouteCoverageTest extends TestCase
             ->assertViewIs('products.create');
         $this->actingAs($user)->get(route('products.show', $product, absolute: false))
             ->assertOk()
-            ->assertViewIs('products.show');
+            ->assertViewIs('products.show')
+            ->assertViewHas('barcode', function ($barcode) {
+                return is_string($barcode) && str_contains($barcode, '<div style="font-size:0;position:relative;');
+            });
         $this->actingAs($user)->get(route('products.edit', $product, absolute: false))
             ->assertOk()
             ->assertViewIs('products.edit');
