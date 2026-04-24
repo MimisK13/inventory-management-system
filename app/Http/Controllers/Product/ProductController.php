@@ -29,13 +29,11 @@ class ProductController extends Controller
         $categories = Category::all(['id', 'name']);
         $units = Unit::all(['id', 'name']);
 
-        if ($request->has('category'))
-        {
+        if ($request->has('category')) {
             $categories = Category::whereSlug($request->get('category'))->get();
         }
 
-        if ($request->has('unit'))
-        {
+        if ($request->has('unit')) {
             $units = Unit::whereSlug($request->get('unit'))->get();
         }
 
@@ -47,19 +45,18 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-//        dd($request);
         $product = Product::create($request->all());
 
         /**
          * Handle upload image
          */
-        if($request->hasFile('product_image')){
+        if ($request->hasFile('product_image')) {
             $file = $request->file('product_image');
             $filename = hexdec(uniqid()).'.'.$file->getClientOriginalExtension();
 
             $file->storeAs('products/', $filename, 'public');
             $product->update([
-                'product_image' => $filename
+                'product_image' => $filename,
             ]);
         }
 
@@ -71,7 +68,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         // Generate a barcode
-        $generator = new BarcodeGeneratorHTML();
+        $generator = new BarcodeGeneratorHTML;
 
         $barcode = $generator->getBarcode($product->code, $generator::TYPE_CODE_128);
 
@@ -86,7 +83,7 @@ class ProductController extends Controller
         return view('products.edit', [
             'categories' => Category::all(),
             'units' => Unit::all(),
-            'product' => $product
+            'product' => $product,
         ]);
     }
 
@@ -94,11 +91,11 @@ class ProductController extends Controller
     {
         $product->update($request->except('product_image'));
 
-        if($request->hasFile('product_image')){
+        if ($request->hasFile('product_image')) {
 
             // Delete Old Photo
-            if($product->product_image){
-                unlink(public_path('storage/products/') . $product->product_image);
+            if ($product->product_image) {
+                unlink(public_path('storage/products/').$product->product_image);
             }
 
             // Prepare New Photo
@@ -110,7 +107,7 @@ class ProductController extends Controller
 
             // Save DB
             $product->update([
-                'product_image' => $fileName
+                'product_image' => $fileName,
             ]);
         }
 
@@ -122,10 +119,10 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         /**
-         * Delete photo if exists.
+         * Delete a photo if exists.
          */
-        if($product->product_image){
-            unlink(public_path('storage/products/') . $product->product_image);
+        if ($product->product_image) {
+            unlink(public_path('storage/products/').$product->product_image);
         }
 
         $product->delete();
