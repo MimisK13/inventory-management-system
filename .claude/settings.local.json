@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find resources/views -name \"*.blade.php\" -type f -exec grep -l \"wire:model\" {} \\\\;)",
+      "Bash(grep -r '$dispatch' resources/views/livewire '--include=*.blade.php' -n)",
+      "Bash(composer show:*)",
+      "Bash(/c/Users/mimis/.config/herd/bin/php artisan:*)",
+      "Bash(/c/Users/mimis/.config/herd/bin/php84.bat artisan:*)",
+      "mcp__laravel-boost__search-docs",
+      "WebSearch",
+      "WebFetch(domain:packagist.org)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "laravel-boost"
+  ]
+}
