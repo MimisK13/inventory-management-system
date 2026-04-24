@@ -18,7 +18,7 @@ jobs:
     - uses: shivammathur/setup-php@v2
       with:
         php-version: '8.4'
-        coverage: xdebug
+        coverage: pcov
     - uses: actions/checkout@v6
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -32,20 +32,25 @@ jobs:
       run: |
         mkdir -p database
         touch database/database.sqlite
+    - name: Verify coverage driver
+      run: |
+        php -v
+        php -m | grep -E "pcov|xdebug"
     - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
-        XDEBUG_MODE: coverage
-      run: php artisan test --coverage --coverage-clover=coverage.xml
+      run: php -d pcov.enabled=1 artisan test --coverage-clover=coverage.xml
     - name: Verify coverage file exists
       run: |
         test -f coverage.xml
+        test -s coverage.xml
         wc -l coverage.xml
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v6
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        files: coverage.xml
+        files: ./coverage.xml
+        disable_search: true
         fail_ci_if_error: true
         verbose: true
