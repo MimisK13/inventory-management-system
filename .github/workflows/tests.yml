@@ -36,9 +36,16 @@ jobs:
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
-      run: php artisan test --compact --coverage-clover=coverage.xml
+        XDEBUG_MODE: coverage
+      run: php artisan test --coverage --coverage-clover=coverage.xml
+    - name: Verify coverage file exists
+      run: |
+        test -f coverage.xml
+        wc -l coverage.xml
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v6
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: coverage.xml
+        fail_ci_if_error: true
+        verbose: true
