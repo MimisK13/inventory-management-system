@@ -11,11 +11,11 @@ use App\Models\Purchase;
 use App\Models\PurchaseDetails;
 use App\Models\Supplier;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PurchaseController extends Controller
 {
@@ -93,18 +93,40 @@ class PurchaseController extends Controller
 
     public function update(Purchase $purchase, Request $request)
     {
-        $products = PurchaseDetails::where('purchase_id', $purchase->id)->get();
+        $isUpdated = DB::transaction(function () use ($purchase) {
+            $lockedPurchase = Purchase::query()
+                ->lockForUpdate()
+                ->findOrFail($purchase->id);
 
-        foreach ($products as $product) {
-            Product::where('id', $product->product_id)
-                ->update(['quantity' => DB::raw('quantity+'.$product->quantity)]);
-        }
+            if ($lockedPurchase->status === PurchaseStatus::APPROVED) {
+                return false;
+            }
 
-        Purchase::findOrFail($purchase->id)
-            ->update([
+            $products = PurchaseDetails::query()
+                ->where('purchase_id', $lockedPurchase->id)
+                ->lockForUpdate()
+                ->get();
+
+            foreach ($products as $product) {
+                Product::query()
+                    ->whereKey($product->product_id)
+                    ->lockForUpdate()
+                    ->increment('quantity', $product->quantity);
+            }
+
+            $lockedPurchase->update([
                 'status' => PurchaseStatus::APPROVED,
-                'updated_by' => auth()->user()->id,
+                'updated_by' => auth()->id(),
             ]);
+
+            return true;
+        });
+
+        if (! $isUpdated) {
+            return redirect()
+                ->route('purchases.index')
+                ->with('info', 'Purchase is already approved.');
+        }
 
         return redirect()
             ->route('purchases.index')
@@ -149,12 +171,10 @@ class PurchaseController extends Controller
         $sDate = $validatedData['start_date'];
         $eDate = $validatedData['end_date'];
 
-        $purchases = DB::table('purchase_details')
-            ->join('products', 'purchase_details.product_id', '=', 'products.id')
-            ->join('purchases', 'purchase_details.purchase_id', '=', 'purchases.id')
-            ->whereBetween('purchases.purchase_date', [$sDate, $eDate])
-            ->where('purchases.purchase_status', '1')
-            ->select('purchases.purchase_no', 'purchases.purchase_date', 'purchases.supplier_id', 'products.code', 'products.name', 'purchase_details.quantity', 'purchase_details.unitcost', 'purchase_details.total')
+        $purchases = Purchase::query()
+            ->with(['details.product', 'supplier'])
+            ->whereBetween('date', [$sDate, $eDate])
+            ->where('status', PurchaseStatus::APPROVED)
             ->get();
 
         $purchase_array[] = [
@@ -169,39 +189,34 @@ class PurchaseController extends Controller
         ];
 
         foreach ($purchases as $purchase) {
-            $purchase_array[] = [
-                'Date' => $purchase->purchase_date,
-                'No Purchase' => $purchase->purchase_no,
-                'Supplier' => $purchase->supplier_id,
-                'Product Code' => $purchase->product_code,
-                'Product' => $purchase->product_name,
-                'Quantity' => $purchase->quantity,
-                'Unitcost' => $purchase->unitcost,
-                'Total' => $purchase->total,
-            ];
+            foreach ($purchase->details as $detail) {
+                $purchase_array[] = [
+                    'Date' => $purchase->date->format('Y-m-d'),
+                    'No Purchase' => $purchase->purchase_no,
+                    'Supplier' => $purchase->supplier?->name ?? '-',
+                    'Product Code' => $detail->product?->code ?? '-',
+                    'Product' => $detail->product?->name ?? '-',
+                    'Quantity' => $detail->quantity,
+                    'Unitcost' => $detail->unitcost,
+                    'Total' => $detail->total,
+                ];
+            }
         }
 
-        $this->exportExcel($purchase_array);
+        return $this->exportExcel($purchase_array);
     }
 
-    public function exportExcel($products)
+    public function exportExcel(array $products): StreamedResponse
     {
-        ini_set('max_execution_time', 0);
-        ini_set('memory_limit', '4000M');
+        $spreadSheet = new Spreadsheet;
+        $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
+        $spreadSheet->getActiveSheet()->fromArray($products);
 
-        try {
-            $spreadSheet = new Spreadsheet;
-            $spreadSheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(20);
-            $spreadSheet->getActiveSheet()->fromArray($products);
-            $Excel_writer = new Xls($spreadSheet);
-            header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment;filename="purchase-report.xls"');
-            header('Cache-Control: max-age=0');
-            ob_end_clean();
-            $Excel_writer->save('php://output');
-            exit();
-        } catch (Exception $e) {
-            return $e;
-        }
+        return response()->streamDownload(function () use ($spreadSheet) {
+            $excelWriter = new Xls($spreadSheet);
+            $excelWriter->save('php://output');
+        }, 'purchase-report.xls', [
+            'Content-Type' => 'application/vnd.ms-excel',
+        ]);
     }
 }

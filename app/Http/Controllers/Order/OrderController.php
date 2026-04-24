@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class OrderController extends Controller
 {
@@ -75,19 +76,54 @@ class OrderController extends Controller
 
     public function update(Order $order, Request $request)
     {
-        // TODO refactoring
+        try {
+            $isUpdated = DB::transaction(function () use ($order) {
+                $lockedOrder = Order::query()
+                    ->lockForUpdate()
+                    ->findOrFail($order->id);
 
-        // Reduce the stock
-        $products = OrderDetails::where('order_id', $order)->get();
+                if ($lockedOrder->order_status === OrderStatus::COMPLETE) {
+                    return false;
+                }
 
-        foreach ($products as $product) {
-            Product::where('id', $product->product_id)
-                ->update(['quantity' => DB::raw('quantity-'.$product->quantity)]);
+                $products = OrderDetails::query()
+                    ->where('order_id', $lockedOrder->id)
+                    ->lockForUpdate()
+                    ->get();
+
+                foreach ($products as $product) {
+                    $inventoryItem = Product::query()
+                        ->lockForUpdate()
+                        ->find($product->product_id);
+
+                    if (! $inventoryItem) {
+                        continue;
+                    }
+
+                    if ($inventoryItem->quantity < $product->quantity) {
+                        throw new RuntimeException('Order cannot be completed: insufficient stock.');
+                    }
+
+                    $inventoryItem->decrement('quantity', $product->quantity);
+                }
+
+                $lockedOrder->update([
+                    'order_status' => OrderStatus::COMPLETE,
+                ]);
+
+                return true;
+            });
+        } catch (RuntimeException $exception) {
+            return redirect()
+                ->route('orders.index')
+                ->with('error', $exception->getMessage());
         }
 
-        $order->update([
-            'order_status' => OrderStatus::COMPLETE,
-        ]);
+        if (! $isUpdated) {
+            return redirect()
+                ->route('orders.complete')
+                ->with('info', 'Order is already completed.');
+        }
 
         return redirect()
             ->route('orders.complete')

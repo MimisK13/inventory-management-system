@@ -19,7 +19,7 @@
 </header>
 
 <div class="container-xl px-2 mt-n10">
-    <form action="{{ route('purchases.getReportPurchase') }}" method="POST">
+    <form action="{{ route('purchases.exportPurchaseReport') }}" method="POST">
         @csrf
         <div class="row">
 
@@ -33,7 +33,7 @@
                             <div class="col-md-6">
                                 <label class="small my-1" for="start_date">Start Date <span class="text-danger">*</span></label>
                                 <input class="form-control form-control-solid example-date-input @error('start_date') is-invalid @enderror" name="start_date" id="date" type="date" value="{{ old('start_date') }}">
-                                @error('purchase_date')
+                                @error('start_date')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>

@@ -31,10 +31,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('php/', function () {
-    return phpinfo();
-});
-
 Route::get('/', function () {
     return view('welcome');
 });
@@ -112,7 +108,3 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__.'/auth.php';
-
-Route::get('test/', function () {
-    return view('orders.create');
-});
