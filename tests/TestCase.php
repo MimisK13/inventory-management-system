@@ -14,13 +14,13 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication, RefreshDatabase, InteractsWithExceptionHandling;
+    use CreatesApplication, InteractsWithExceptionHandling, RefreshDatabase;
 
     public function createUser()
     {
         return User::factory()->create([
-           'name' => 'admin',
-           'email' => 'admin@admin.com'
+            'name' => 'admin',
+            'email' => 'admin@admin.com',
         ]);
     }
 
@@ -29,35 +29,35 @@ abstract class TestCase extends BaseTestCase
         return Product::factory()->create([
             'name' => 'Test Product',
             'category_id' => $this->createCategory(),
-            'unit_id' => $this->createUnit()
+            'unit_id' => $this->createUnit(),
         ]);
     }
 
     protected function createCategory()
     {
         return Category::factory()->create([
-            'name' => 'Speakers'
+            'name' => 'Speakers',
         ]);
     }
 
     protected function createUnit()
     {
         return Unit::factory()->create([
-            'name' => 'piece'
+            'name' => 'piece',
         ]);
     }
 
     public function createCustomer()
     {
         return Customer::factory()->create([
-            'name' => 'Customer 1'
+            'name' => 'Customer 1',
         ]);
     }
 
     public function createSupplier()
     {
-        return Supplier::create([
-            'name' => 'Thomann'
+        return Supplier::factory()->create([
+            'name' => 'Thomann',
         ]);
     }
 }

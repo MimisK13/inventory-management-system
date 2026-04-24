@@ -3,7 +3,6 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -20,10 +19,10 @@ class AuthenticationTest extends TestCase
         $this->user = $this->createUser();
     }
 
-//    public function createUser(): User
-//    {
-//        return User::factory()->create();
-//    }
+    //    public function createUser(): User
+    //    {
+    //        return User::factory()->create();
+    //    }
 
     public function test_login_screen_can_be_rendered(): void
     {
@@ -39,7 +38,6 @@ class AuthenticationTest extends TestCase
 
         $response = $this->actingAs($this->user)->get('/login');
 
-        $response->assertRedirect(RouteServiceProvider::HOME);
         $response->assertRedirect('/dashboard');
     }
 
