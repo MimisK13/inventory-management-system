@@ -1,7 +1,5 @@
 ## ✨ Inventory Management System
 
-Inventory Management System with Laravel 10 and MySql.
-
 [![Tests](https://github.com/MimisK13/inventory-management-system/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/MimisK13/inventory-management-system/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/MimisK13/inventory-management-system/graph/badge.svg?token=4LPEFOM8RE)](https://codecov.io/gh/MimisK13/inventory-management-system)
 

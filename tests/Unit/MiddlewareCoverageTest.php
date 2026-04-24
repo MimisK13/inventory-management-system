@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\RedirectIfAuthenticated;
+use App\Http\Middleware\TrustHosts;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -70,5 +71,14 @@ class MiddlewareCoverageTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('ok', $response->getContent());
+    }
+
+    public function test_trust_hosts_returns_single_host_pattern(): void
+    {
+        $middleware = new TrustHosts(app());
+        $hosts = $middleware->hosts();
+
+        $this->assertCount(1, $hosts);
+        $this->assertTrue(is_string($hosts[0]) || $hosts[0] === null);
     }
 }
