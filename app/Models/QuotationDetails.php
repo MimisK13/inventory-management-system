@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Attribute;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -19,7 +19,7 @@ class QuotationDetails extends Model
         'sub_total',
         'product_discount_amount',
         'product_discount_type',
-        'product_tax_amount'
+        'product_tax_amount',
     ];
 
     protected $with = ['product'];
@@ -38,7 +38,6 @@ class QuotationDetails extends Model
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
     }
-
 
     protected function price(): Attribute
     {

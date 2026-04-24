@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Enums\QuotationStatus;
-use Attribute;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Quotation extends Model
 {
@@ -24,17 +24,18 @@ class Quotation extends Model
         'status',
         'note',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     protected $casts = [
         'date' => 'date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'status' => QuotationStatus::class
+        'status' => QuotationStatus::class,
     ];
 
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
 
         static::creating(function ($model) {
@@ -52,7 +53,6 @@ class Quotation extends Model
     {
         return $this->belongsTo(Customer::class);
     }
-
 
     protected function shippingAmount(): Attribute
     {
@@ -85,7 +85,6 @@ class Quotation extends Model
             set: fn ($value) => $value * 100,
         );
     }
-
 
     public function scopeSearch($query, $value): void
     {

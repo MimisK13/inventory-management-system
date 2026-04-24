@@ -120,11 +120,11 @@ class ModelsRelationsAndScopesTest extends TestCase
             'customer_id' => $customer->id,
             'customer_name' => $customer->name,
             'tax_percentage' => 10,
-            'tax_amount' => 1000,
+            'tax_amount' => 10,
             'discount_percentage' => 5,
-            'discount_amount' => 500,
-            'shipping_amount' => 500,
-            'total_amount' => 11000,
+            'discount_amount' => 5,
+            'shipping_amount' => 5,
+            'total_amount' => 110,
             'status' => QuotationStatus::SENT->value,
             'note' => null,
         ]);
@@ -149,12 +149,12 @@ class ModelsRelationsAndScopesTest extends TestCase
             'product_name' => $product->name,
             'product_code' => $product->code,
             'quantity' => 1,
-            'price' => 1000,
-            'unit_price' => 1000,
-            'sub_total' => 1000,
-            'product_discount_amount' => 100,
+            'price' => 10,
+            'unit_price' => 10,
+            'sub_total' => 10,
+            'product_discount_amount' => 1,
             'product_discount_type' => 'fixed',
-            'product_tax_amount' => 240,
+            'product_tax_amount' => 2.4,
         ]);
 
         $this->assertTrue($orderDetail->product->is($product));
@@ -163,14 +163,14 @@ class ModelsRelationsAndScopesTest extends TestCase
         $this->assertTrue($purchaseDetail->purchase->is($purchase));
         $this->assertTrue($quotationDetail->product->is($product));
         $this->assertTrue($quotationDetail->quotation->is($quotation));
-        $this->assertSame(1000, $quotationDetail->price);
-        $this->assertSame(1000, $quotationDetail->unit_price);
-        $this->assertSame(1000, $quotationDetail->sub_total);
-        $this->assertSame(100, $quotationDetail->product_discount_amount);
-        $this->assertSame(240, $quotationDetail->product_tax_amount);
-        $this->assertSame(500, $quotation->shipping_amount);
-        $this->assertSame(11000, $quotation->total_amount);
-        $this->assertSame(1000, $quotation->tax_amount);
-        $this->assertSame(500, $quotation->discount_amount);
+        $this->assertEquals(10.0, $quotationDetail->price);
+        $this->assertEquals(10.0, $quotationDetail->unit_price);
+        $this->assertEquals(10.0, $quotationDetail->sub_total);
+        $this->assertEquals(1.0, $quotationDetail->product_discount_amount);
+        $this->assertEquals(2.4, $quotationDetail->product_tax_amount);
+        $this->assertEquals(5.0, $quotation->shipping_amount);
+        $this->assertEquals(110.0, $quotation->total_amount);
+        $this->assertEquals(10.0, $quotation->tax_amount);
+        $this->assertEquals(5.0, $quotation->discount_amount);
     }
 }
