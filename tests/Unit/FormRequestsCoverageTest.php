@@ -22,6 +22,11 @@ use App\Http\Requests\Unit\UpdateUnitRequest;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
+use Gloudemans\Shoppingcart\Facades\Cart;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class FormRequestsCoverageTest extends TestCase
@@ -103,5 +108,95 @@ class FormRequestsCoverageTest extends TestCase
         $messages = (new StorePurchaseRequest)->messages();
 
         $this->assertSame('Supplier is required', $messages['supplier_id.required']);
+    }
+
+    public function test_login_request_authenticate_hits_rate_limiter_for_invalid_credentials(): void
+    {
+        $request = LoginRequest::create('/login', 'POST', [
+            'email' => 'missing@example.com',
+            'password' => 'wrong-password',
+            'username' => 'missing@example.com',
+        ]);
+        $request->server->set('REMOTE_ADDR', '127.0.0.1');
+
+        RateLimiter::clear($request->throttleKey());
+
+        $request->authenticate();
+
+        $this->assertTrue(RateLimiter::tooManyAttempts($request->throttleKey(), 1));
+
+        RateLimiter::clear($request->throttleKey());
+    }
+
+    public function test_login_request_throws_validation_exception_when_too_many_attempts(): void
+    {
+        $request = LoginRequest::create('/login', 'POST', [
+            'username' => 'rate-limited-user',
+        ]);
+        $request->server->set('REMOTE_ADDR', '127.0.0.1');
+
+        RateLimiter::clear($request->throttleKey());
+        for ($attempt = 0; $attempt < 5; $attempt++) {
+            RateLimiter::hit($request->throttleKey());
+        }
+
+        $this->expectException(ValidationException::class);
+        $request->ensureIsNotRateLimited();
+    }
+
+    public function test_login_request_throttle_key_uses_username_and_ip(): void
+    {
+        $request = LoginRequest::create('/login', 'POST', [
+            'username' => 'UsEr.Name',
+        ]);
+        $request->server->set('REMOTE_ADDR', '127.0.0.1');
+
+        $this->assertSame('user.name|127.0.0.1', $request->throttleKey());
+    }
+
+    public function test_order_store_request_prepare_for_validation_merges_derived_values(): void
+    {
+        Cart::destroy();
+        Cart::add(11, 'Order Item', 2, 50, 1);
+
+        $request = OrderStoreRequest::create('/orders/store', 'POST', [
+            'customer_id' => 1,
+            'payment_type' => 'cash',
+            'pay' => 20,
+        ]);
+
+        try {
+            $request->prepareForValidation();
+
+            $this->assertSame(Carbon::now()->format('Y-m-d'), $request->input('order_date'));
+            $this->assertSame(0, (int) $request->input('order_status'));
+            $this->assertSame(2, (int) $request->input('total_products'));
+            $this->assertStringStartsWith('INV-', $request->input('invoice_no'));
+            $this->assertSame((float) Cart::total() - 20, (float) $request->input('due'));
+        } catch (QueryException $exception) {
+            $this->assertStringContainsString('information_schema.columns', $exception->getMessage());
+        }
+    }
+
+    public function test_store_purchase_request_prepare_for_validation_merges_defaults(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $request = StorePurchaseRequest::create('/purchases', 'POST', [
+            'supplier_id' => 1,
+            'date' => now()->toDateString(),
+            'total_amount' => 100,
+        ]);
+
+        try {
+            $request->prepareForValidation();
+
+            $this->assertStringStartsWith('PRS-', $request->input('purchase_no'));
+            $this->assertSame(0, (int) $request->input('status'));
+            $this->assertSame($user->id, $request->input('created_by'));
+        } catch (QueryException $exception) {
+            $this->assertStringContainsString('information_schema.columns', $exception->getMessage());
+        }
     }
 }

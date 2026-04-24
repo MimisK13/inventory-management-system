@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProfileTest extends TestCase
@@ -41,6 +43,7 @@ class ProfileTest extends TestCase
 
         $this->assertSame('Test User', $user->name);
         $this->assertSame('test@example.com', $user->email);
+        $this->assertNotNull($user->email_verified_at);
     }
 
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
@@ -96,5 +99,38 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->fresh());
+    }
+
+    public function test_profile_settings_page_is_displayed(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/profile/settings')
+            ->assertOk();
+    }
+
+    public function test_profile_photo_update_replaces_existing_file(): void
+    {
+        Storage::fake('local');
+
+        $user = User::factory()->create([
+            'photo' => 'old-avatar.jpg',
+        ]);
+
+        Storage::disk('local')->put('public/profile/old-avatar.jpg', 'old-content');
+
+        $this->actingAs($user)->patch('/profile', [
+            'name' => 'Updated Name',
+            'email' => 'updated@example.com',
+            'username' => 'updated-user',
+            'photo' => UploadedFile::fake()->image('avatar.jpg'),
+        ])->assertRedirect('/profile');
+
+        $user->refresh();
+
+        $this->assertNotSame('old-avatar.jpg', $user->photo);
+        Storage::disk('local')->assertMissing('public/profile/old-avatar.jpg');
+        Storage::disk('local')->assertExists('public/profile/'.$user->photo);
     }
 }

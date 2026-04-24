@@ -50,6 +50,52 @@ class PosInvoiceOrderDueRouteCoverageTest extends TestCase
 
     }
 
+    public function test_pos_update_cart_item_route_works_for_authenticated_user(): void
+    {
+        $user = $this->createUser();
+
+        Cart::add(1, 'Update Product', 1, 100, 1);
+        $rowId = Cart::content()->first()->rowId;
+
+        $updateResponse = $this->actingAs($user)->post(route('pos.updateCartItem', ['rowId' => $rowId], absolute: false), [
+            'quantity' => 3,
+        ]);
+
+        $updateResponse->assertRedirect();
+        $updateResponse->assertSessionHas('success');
+        $cartItems = Cart::content();
+        $firstItem = reset($cartItems);
+        $this->assertSame(3, (int) $firstItem['qty']);
+    }
+
+    public function test_pos_delete_cart_item_route_redirects_after_delete(): void
+    {
+        $user = $this->createUser();
+
+        Cart::add(1, 'Delete Product', 1, 100, 1);
+        $rowId = Cart::content()->first()->rowId;
+
+        $response = $this->actingAs($user)
+            ->delete(route('pos.deleteCartItem', ['rowId' => $rowId], absolute: false))
+            ->assertRedirect();
+
+        $response->assertSessionHas('success');
+    }
+
+    public function test_pos_routes_validate_required_payloads(): void
+    {
+        $user = $this->createUser();
+
+        $this->actingAs($user)->post(route('pos.addCartItem', absolute: false), [])
+            ->assertSessionHasErrors(['id', 'name', 'selling_price']);
+
+        Cart::add(2, 'Validate Product', 1, 10, 1);
+        $rowId = Cart::content()->first()->rowId;
+
+        $this->actingAs($user)->post(route('pos.updateCartItem', ['rowId' => $rowId], absolute: false), [])
+            ->assertSessionHasErrors(['quantity']);
+    }
+
     public function test_guest_cannot_access_pos_update_and_delete_routes(): void
     {
         $this->post(route('pos.updateCartItem', ['rowId' => 'test-row-id'], absolute: false), [

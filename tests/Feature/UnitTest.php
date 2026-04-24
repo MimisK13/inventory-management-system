@@ -161,4 +161,20 @@ class UnitTest extends TestCase
         $this->assertDatabaseCount('units', 0);
 
     }
+
+    public function test_show_unit_page_displays_unit(): void
+    {
+        $unit = Unit::create([
+            'name' => 'Kilogram',
+            'slug' => 'kilogram',
+            'short_code' => 'kg',
+        ]);
+
+        $user = $this->createUser();
+        $response = $this->actingAs($user)->get(route('units.show', $unit, false));
+
+        $response->assertOk()
+            ->assertViewIs('units.show')
+            ->assertSee('Kilogram');
+    }
 }

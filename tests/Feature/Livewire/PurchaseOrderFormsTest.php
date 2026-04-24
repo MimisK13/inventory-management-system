@@ -81,4 +81,39 @@ class PurchaseOrderFormsTest extends TestCase
 
         $this->assertSame(1, (int) Cart::instance('sale')->count());
     }
+
+    public function test_order_form_prevents_editing_when_another_line_is_unsaved(): void
+    {
+        Cart::instance('sale')->destroy();
+        $product = $this->createProductForForm();
+
+        $component = Livewire::test(OrderForm::class, ['cartInstance' => 'sale'])
+            ->call('addProduct')
+            ->set('invoiceProducts.0.product_id', $product->id)
+            ->set('invoiceProducts.0.quantity', 1)
+            ->call('saveProduct', 0)
+            ->call('addProduct')
+            ->call('editProduct', 0);
+
+        $component->assertHasErrors(['invoiceProducts.1']);
+        $this->assertTrue($component->get('invoiceProducts')[0]['is_saved']);
+    }
+
+    public function test_order_form_remove_product_reindexes_lines(): void
+    {
+        Cart::instance('sale')->destroy();
+        $product = $this->createProductForForm();
+
+        $component = Livewire::test(OrderForm::class, ['cartInstance' => 'sale'])
+            ->call('addProduct')
+            ->set('invoiceProducts.0.product_id', $product->id)
+            ->call('saveProduct', 0)
+            ->call('addProduct')
+            ->call('removeProduct', 0);
+
+        $invoiceProducts = $component->get('invoiceProducts');
+        $this->assertCount(1, $invoiceProducts);
+        $this->assertArrayHasKey(0, $invoiceProducts);
+        $this->assertFalse($invoiceProducts[0]['is_saved']);
+    }
 }

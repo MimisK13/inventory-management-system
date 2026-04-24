@@ -66,6 +66,13 @@ class HelpersTest extends TestCase
         $this->assertSame('1,234.50 EUR', format_currency(1234.5));
     }
 
+    public function test_format_currency_uses_fallback_settings_when_cache_is_empty(): void
+    {
+        cache()->forget('settings');
+
+        $this->assertSame('1,234.50 $', format_currency(1234.5));
+    }
+
     public function test_make_reference_id_generates_padded_identifier(): void
     {
         $this->assertSame('PO-00042', make_reference_id('PO', 42));
